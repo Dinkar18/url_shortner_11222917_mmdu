@@ -80,7 +80,7 @@ const UrlInputForm = () => {
   return (
     <Paper elevation={3} sx={{ p: 3, maxWidth: 900, mx: "auto" }}>
       <Typography variant="h5" gutterBottom>
-        Shorten up to 5 URLs
+      You Can  Shorten upto 5 URLs
       </Typography>
 
       {forms.map((form, index) => (

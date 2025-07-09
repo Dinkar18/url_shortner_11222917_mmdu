@@ -7,7 +7,7 @@ const ShortenerPage = () => {
   return (
     <Container maxWidth="md" sx={{ py: 5 }}>
       <Typography variant="h4" gutterBottom align="center">
-        🔗 React URL Shortener
+        Short Your URL
       </Typography>
       <UrlInputForm />
       <Divider sx={{ my: 4 }} />

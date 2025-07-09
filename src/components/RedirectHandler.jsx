@@ -14,7 +14,6 @@ const RedirectHandler = () => {
       return navigate("/");
     }
 
-    // Log click
     updateClick(shortcode, {
       time: new Date().toISOString(),
       source: document.referrer,

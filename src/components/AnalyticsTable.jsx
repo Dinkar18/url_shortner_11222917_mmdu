@@ -1,16 +1,16 @@
 import React from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Box,
+  Paper,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import useUrlStore from "../store/urlStore";
@@ -18,69 +18,80 @@ import useUrlStore from "../store/urlStore";
 const AnalyticsTable = () => {
   const { urls } = useUrlStore();
 
-  if (urls.length === 0)
-    return <Typography>No analytics data available.</Typography>;
+  if (!urls.length) {
+    return (
+      <Typography variant="body1" align="center">
+        No URL analytics available.
+      </Typography>
+    );
+  }
 
   return (
-    <TableContainer component={Paper}>
-      <Table aria-label="analytics table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Short URL</TableCell>
-            <TableCell>Created At</TableCell>
-            <TableCell>Expires At</TableCell>
-            <TableCell>Click Count</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {urls.map((url) => (
-            <React.Fragment key={url.shortcode}>
-              <TableRow>
-                <TableCell>
-                  <a href={`/${url.shortcode}`} target="_blank" rel="noreferrer">
-                    {url.shortcode}
-                  </a>
-                </TableCell>
-                <TableCell>
-                  {new Date(url.createdAt).toLocaleString()}
-                </TableCell>
-                <TableCell>{new Date(url.expiry).toLocaleString()}</TableCell>
-                <TableCell>{url.clicks?.length || 0}</TableCell>
-              </TableRow>
-              {url.clicks?.length > 0 && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <Accordion>
-                      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Typography variant="subtitle1">
-                          Click Details ({url.clicks.length})
-                        </Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                        {url.clicks.map((click, idx) => (
-                          <div key={idx} style={{ marginBottom: "0.5rem" }}>
-                            <Typography>
-                              <strong>Time:</strong>{" "}
-                              {new Date(click.time).toLocaleString()}
-                            </Typography>
-                            <Typography>
-                              <strong>Source:</strong> {click.source || "Direct"}
-                            </Typography>
-                            <Typography>
-                              <strong>Location:</strong> {click.location || "Unknown"}
-                            </Typography>
-                          </div>
-                        ))}
-                      </AccordionDetails>
-                    </Accordion>
-                  </TableCell>
-                </TableRow>
+    <Box sx={{ mt: 4 }}>
+      {urls.map((urlData) => {
+        const {
+          originalUrl,
+          shortcode,
+          createdAt,
+          expiresAt,
+          clicks = [],
+        } = urlData;
+
+        return (
+          <Accordion key={shortcode} sx={{ mb: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="subtitle1">
+                  🔗 {originalUrl}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Short URL: <strong>http://localhost:3000/{shortcode}</strong>
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Created: {new Date(createdAt).toLocaleString()} | Expires:{" "}
+                  {new Date(expiresAt).toLocaleString()}
+                </Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>
+                  Total Clicks: <strong>{clicks.length}</strong>
+                </Typography>
+              </Box>
+            </AccordionSummary>
+            <AccordionDetails>
+              {clicks.length === 0 ? (
+                <Typography variant="body2">
+                  No click data available yet.
+                </Typography>
+              ) : (
+                <Paper elevation={1}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Timestamp</TableCell>
+                        <TableCell>Referrer</TableCell>
+                        <TableCell>Location</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {clicks.map((click, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            {new Date(click.timestamp).toLocaleString()}
+                          </TableCell>
+                          <TableCell>{click.referrer || "Direct"}</TableCell>
+                          <TableCell>
+                            {click.location || "Unknown"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Paper>
               )}
-            </React.Fragment>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            </AccordionDetails>
+          </Accordion>
+        );
+      })}
+    </Box>
   );
 };
 
